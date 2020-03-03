@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
-import sys, os
-import json
+import sys
+import os
 import argparse
 
 from datacoco_core.logger import Logger
@@ -9,7 +9,6 @@ from datacoco_batch import Batch
 from datacoco_db.mssql_tools import MSSQLInteraction
 from datetime import datetime
 from datacoco_core.config import config
-from datacoco_secretsmanager import SecretsManager
 
 # import pymssql
 
@@ -17,7 +16,8 @@ from datacoco_secretsmanager import SecretsManager
 # sys.excepthook = l.handle_exception
 class MSSQLRunner:
     """
-    generic class for execution of a parameterized script in postgres or redshift
+    generic class for execution of a parameterized script
+    in postgres or redshift
     """
 
     def __init__(self, database):
@@ -86,10 +86,11 @@ class MSSQLRunner:
             script_path, script_filename = os.path.split(script)
             logger = Logger(logname=script_filename)
         else:
-            logger = Logger(logname='direct_sql')
+            logger = Logger(logname="direct_sql")
             sys.excepthook = logger.handle_exception
 
-        # first we retrive params  we will load these into dict first, any additional params specified will override
+        # first we retrive params  we will load these into dict first,
+        # any additional params specified will override
         if batchy_job:
             wf = batchy_job.split(".")[0]
             try:
@@ -98,22 +99,28 @@ class MSSQLRunner:
                     if len(batchy_job.split(".")[1]) > 0
                     else "global"
                 )
-            except:
+            except Exception as e:
+                logger.l(e)
                 job = "global"
-            batchy_params = Batch(wf, server=self.conf['batchy']['server'], port=self.conf['batchy']['port']).get_status()
+            batchy_params = Batch(
+                wf,
+                server=self.conf["batchy"]["server"],
+                port=self.conf["batchy"]["port"],
+            ).get_status()
             paramset.update(batchy_params[job])
 
-        # next we apply custom params and special metadata fields, again this will overrite batchy params if specified
+        # next we apply custom params and special metadata fields,
+        # again this will overrite batchy params if specified
         # convert string params to dict
         try:
             params = dict(
                 (k.strip(), v.strip())
                 for k, v in (item.split("-") for item in params.split(","))
             )
-        except:
-            logger.l("issue parsing params")
+        except Exception as e:
+            logger.l(f"issue parsing params: {e}")
 
-        if type(params) == dict:
+        if isinstance(params, dict):
             paramset.update(params)
 
         if from_date:
@@ -144,7 +151,7 @@ class MSSQLRunner:
         else:
             raw_sql = sql_command
         sql = self.expand_params(raw_sql, paramset)
-        sql_message = "\n\n--sql script start:\n" + sql + "\n--sql script end\n\n"
+        sql_message = "\n\n--sql script start:\n"+sql+"\n--sql script end\n\n"
         logger.l(sql_message)
 
         self.ms.batchOpen()
@@ -166,12 +173,14 @@ if __name__ == "__main__":
     parser.add_argument(
         "-s", "--script", help="""enter a path to your script """, default=None
     )
-    # rundeck doesn't like -p '{"param1":"val1", "param2":"val2"}', changed params to string
+    # rundeck doesn't like -p '{"param1":"val1", "param2":"val2"}',
+    # changed params to string
     parser.add_argument(
         "-p",
         "--parameters",  # type=json.loads, default='{"none":"none"}',
         default="none-none",
-        help="""additional params to be substituted in script, example: -p param1-val1, param2-val2 """,
+        help="""additional params to be substituted in script,
+        example: -p param1-val1, param2-val2 """,
     )
     parser.add_argument(
         "-d",
@@ -179,9 +188,24 @@ if __name__ == "__main__":
         help="""db alias from etl.cfg, default is life """,
         default="life",
     )
-    parser.add_argument("-f", "--from_date", help="""from_date""", default=None)
-    parser.add_argument("-t", "--to_date", help="""to_date""", default=None)
-    parser.add_argument("-b", "--batch_id", help="""enter batch id """, default=None)
+    parser.add_argument(
+        "-f",
+        "--from_date",
+        help="""from_date""",
+        default=None
+    )
+    parser.add_argument(
+        "-t",
+        "--to_date",
+        help="""to_date""",
+        default=None
+    )
+    parser.add_argument(
+        "-b",
+        "--batch_id",
+        help="""enter batch id """,
+        default=None
+    )
     parser.add_argument(
         "-wf",
         "--batchy_job",
