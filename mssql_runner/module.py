@@ -3,37 +3,22 @@
 import sys
 import os
 import argparse
-
 from datacoco_core.logger import Logger
 from datacoco_batch import Batch
 from datacoco_db.mssql_tools import MSSQLInteraction
 from datetime import datetime
-from datacoco_core.config import config
-
-# import pymssql
+from mssql_runner.config_wrapper import ConfigWrapper
 
 
-# sys.excepthook = l.handle_exception
 class MSSQLRunner:
     """
     generic class for execution of a parameterized script
     in postgres or redshift
     """
 
-    def __init__(self, database):
-        conf = config()
-        self.conf = conf
-        ms_db_name = conf[database]["db_name"]
-        ms_user = conf[database]["user"]
-        ms_server = conf[database]["server"]
-        ms_password = conf[database]["password"]
-        ms_port = conf[database].get("port", 1433)
+    def __init__(self, db_name, host, user, password, port):
         self.ms = MSSQLInteraction(
-            dbname=ms_db_name,
-            host=ms_server,
-            user=ms_user,
-            password=ms_password,
-            port=ms_port,
+            dbname=db_name, host=host, user=user, password=password, port=port,
         )
         self.ms.conn()
 
@@ -144,17 +129,19 @@ class MSSQLRunner:
         if script is not None:
             try:
                 raw_sql = open(script).read()
-            except:
+            except Exception as e:
                 e = f"File not found, please check file path."
                 logger.l(e)
                 raise RuntimeError(e)
         else:
             raw_sql = sql_command
         sql = self.expand_params(raw_sql, paramset)
-        sql_message = "\n\n--sql script start:\n"+sql+"\n--sql script end\n\n"
+        sql_message = (
+            "\n\n--sql script start:\n" + sql + "\n--sql script end\n\n"
+        )
         logger.l(sql_message)
 
-        self.ms.batchOpen()
+        self.ms.batch_open()
 
         logger.l("starting script")
         try:
@@ -188,23 +175,13 @@ if __name__ == "__main__":
         help="""db alias from etl.cfg, default is life """,
         default="life",
     )
+
     parser.add_argument(
-        "-f",
-        "--from_date",
-        help="""from_date""",
-        default=None
+        "-f", "--from_date", help="""from_date""", default=None
     )
+    parser.add_argument("-t", "--to_date", help="""to_date""", default=None)
     parser.add_argument(
-        "-t",
-        "--to_date",
-        help="""to_date""",
-        default=None
-    )
-    parser.add_argument(
-        "-b",
-        "--batch_id",
-        help="""enter batch id """,
-        default=None
+        "-b", "--batch_id", help="""enter batch id """, default=None
     )
     parser.add_argument(
         "-wf",
@@ -218,9 +195,16 @@ if __name__ == "__main__":
         help="""actual sql command to be executed""",
         default=None,
     )
+
+    parser = ConfigWrapper.extend_parser(parser)
+
     args = parser.parse_args()
 
-    MSSQLRunner(args.database).run_script(
+    (db_name, host, user, password, port) = ConfigWrapper.process_config(args)
+
+    MSSQLRunner(
+        db_name=db_name, host=host, user=user, password=password, port=port
+    ).run_script(
         args.script,
         args.from_date,
         args.to_date,
