@@ -9,6 +9,7 @@ from datacoco_db.mssql_tools import MSSQLInteraction
 from datetime import datetime
 from mssql_runner.config_wrapper import ConfigWrapper
 
+
 class MSSQLRunner:
     """
     generic class for execution of a parameterized script
@@ -17,11 +18,7 @@ class MSSQLRunner:
 
     def __init__(self, db_name, host, user, password, port):
         self.ms = MSSQLInteraction(
-            dbname=db_name,
-            host=host,
-            user=user,
-            password=password,
-            port=port,
+            dbname=db_name, host=host, user=user, password=password, port=port,
         )
         self.ms.conn()
 
@@ -132,14 +129,16 @@ class MSSQLRunner:
         if script is not None:
             try:
                 raw_sql = open(script).read()
-            except:
+            except Exception as e:
                 e = f"File not found, please check file path."
                 logger.l(e)
                 raise RuntimeError(e)
         else:
             raw_sql = sql_command
         sql = self.expand_params(raw_sql, paramset)
-        sql_message = "\n\n--sql script start:\n"+sql+"\n--sql script end\n\n"
+        sql_message = (
+            "\n\n--sql script start:\n" + sql + "\n--sql script end\n\n"
+        )
         logger.l(sql_message)
 
         self.ms.batch_open()
@@ -178,22 +177,11 @@ if __name__ == "__main__":
     )
 
     parser.add_argument(
-        "-f",
-        "--from_date",
-        help="""from_date""",
-        default=None
+        "-f", "--from_date", help="""from_date""", default=None
     )
+    parser.add_argument("-t", "--to_date", help="""to_date""", default=None)
     parser.add_argument(
-        "-t",
-        "--to_date",
-        help="""to_date""",
-        default=None
-    )
-    parser.add_argument(
-        "-b",
-        "--batch_id",
-        help="""enter batch id """,
-        default=None
+        "-b", "--batch_id", help="""enter batch id """, default=None
     )
     parser.add_argument(
         "-wf",
@@ -214,7 +202,9 @@ if __name__ == "__main__":
 
     (db_name, host, user, password, port) = ConfigWrapper.process_config(args)
 
-    MSSQLRunner(db_name=db_name, host=host, user=user, password=password, port=port).run_script(
+    MSSQLRunner(
+        db_name=db_name, host=host, user=user, password=password, port=port
+    ).run_script(
         args.script,
         args.from_date,
         args.to_date,
