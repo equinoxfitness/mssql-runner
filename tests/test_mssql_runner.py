@@ -22,7 +22,10 @@ class TestMSSQLRunner(unittest.TestCase):
         self.testCls.ms = MagicMock()
         self.testCls.run_script(script='',
                                 params='title-test',
-                                sql_command='select * from test_db where title=$[?title]')
+                                sql_command='''
+                                    select * from test_db 
+                                    where title=$[?title]
+                                ''')
 
     def test_run_script_with_params_multiple(self):
         self.testCls.ms = MagicMock()
