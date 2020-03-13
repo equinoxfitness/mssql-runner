@@ -154,7 +154,8 @@ class MSSQLRunner:
             # os._exit(1)  # this truncates logout in rundeck
 
 
-if __name__ == "__main__":
+def main(args):
+
     # argparse
     parser = argparse.ArgumentParser()
     parser.add_argument(
@@ -198,7 +199,7 @@ if __name__ == "__main__":
 
     parser = ConfigWrapper.extend_parser(parser)
 
-    args = parser.parse_args()
+    args = parser.parse_args(args)
 
     (db_name, host, user, password, port) = ConfigWrapper.process_config(args)
 
@@ -213,3 +214,7 @@ if __name__ == "__main__":
         args.batchy_job,
         args.sql_command,
     )
+
+
+if __name__ == "__main__":
+    main(sys.argv[1:])
