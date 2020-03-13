@@ -25,7 +25,11 @@ class MSSQLRunner:
 
         if not self.is_test:
             self.ms = MSSQLInteraction(
-                dbname=db_name, host=host, user=user, password=password, port=port,
+                dbname=db_name,
+                host=host,
+                user=user,
+                password=password,
+                port=port,
             )
             self.ms.conn()
 
