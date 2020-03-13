@@ -5,7 +5,7 @@ from mssql_runner import UNIT_TEST_KEY
 from mssql_runner.module import MSSQLRunner
 
 
-class TestAthenaInteraction(unittest.TestCase):
+class TestMSSQLRunner(unittest.TestCase):
     def setUp(self):
         os.environ[UNIT_TEST_KEY] = 'True'
         self.testCls = MSSQLRunner(
