@@ -7,6 +7,8 @@ from datacoco_core.logger import Logger
 from datacoco_batch import Batch
 from datacoco_db.mssql_tools import MSSQLInteraction
 from datetime import datetime
+
+from mssql_runner import UNIT_TEST_KEY
 from mssql_runner.config_wrapper import ConfigWrapper
 
 
@@ -17,10 +19,15 @@ class MSSQLRunner:
     """
 
     def __init__(self, db_name, host, user, password, port):
-        self.ms = MSSQLInteraction(
-            dbname=db_name, host=host, user=user, password=password, port=port,
-        )
-        self.ms.conn()
+        self.ms = None
+
+        self.is_test = os.environ.get(UNIT_TEST_KEY, False)
+
+        if not self.is_test:
+            self.ms = MSSQLInteraction(
+                dbname=db_name, host=host, user=user, password=password, port=port,
+            )
+            self.ms.conn()
 
     @staticmethod
     def expand_params(sql, params):
@@ -126,7 +133,7 @@ class MSSQLRunner:
         paramset["batch_no"] = paramset["batch_id"]
 
         # check if it's direct SQL or SQL file
-        if script is not None:
+        if not self.is_test and script is not None:
             try:
                 raw_sql = open(script).read()
             except Exception as e:
