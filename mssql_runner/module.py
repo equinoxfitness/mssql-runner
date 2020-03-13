@@ -210,7 +210,11 @@ if __name__ == "__main__":
     (db_name, host, user, password, port) = ConfigWrapper.process_config(args)
 
     MSSQLRunner(
-        db_name=db_name, host=host, user=user, password=password, port=port
+        db_name=db_name,
+        host=host,
+        user=user,
+        password=password,
+        port=port
     ).run_script(
         args.script,
         args.from_date,
