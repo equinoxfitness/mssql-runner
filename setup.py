@@ -24,6 +24,7 @@ setup(
     long_description=open("README.rst").read(),
     author="Equinox Fitness",
     install_requires=requires,
+    scripts=['bin/mssql-runner'],
     classifiers=[
         "Development Status :: 5 - Production/Stable",
         "Intended Audience :: Developers",
