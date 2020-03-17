@@ -6,6 +6,8 @@ requires = [
     'datacoco-core==0.1.1',
     'datacoco-cloud==0.1.7',
     'datacoco-db==0.1.6',
+    'datacoco-batch==0.1.0',
+    'datacoco-secretsmanager==0.1.2'
 ]
 
 
