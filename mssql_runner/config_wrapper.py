@@ -8,7 +8,7 @@ class ConfigWrapper:
     """
 
     @staticmethod
-    def sm_conf(project_name="maximilian", team_name="data"):
+    def sm_conf(project_name:str, team_name:str):
         """
         Simple config wrapper for using secrets manager.
         """
@@ -18,6 +18,7 @@ class ConfigWrapper:
     @staticmethod
     def extend_parser(parser):
         parser.add_argument(
+            "-cfg",
             "--config",
             default="core",
             help="""
@@ -27,12 +28,29 @@ class ConfigWrapper:
             choices=["secret_manager", "core"],
         )
 
+        parser.add_argument(
+            "-smp",
+            "--secret_project_name",
+            default="maximilian3",
+            help="""
+                secret manager project group
+                """
+        )
+
+        parser.add_argument(
+            "-smt",
+            "--secret_team",
+            default="data",
+            help="""
+                secret manager team
+                """
+        )
         return parser
 
     @staticmethod
     def process_config(args):
         if args.config == "secret_manager":
-            conf = ConfigWrapper.sm_conf()
+            conf = ConfigWrapper.sm_conf(project_name=args.secret_project_name, team_name=args.secret_team)
         elif args.config == "core":
             conf = config()
 

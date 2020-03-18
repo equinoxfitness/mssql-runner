@@ -43,6 +43,30 @@ The final option is to use the batchy integration
 
 *  -wf, batchy_job, this will substitue parameters from a batchy workflow, this should be a fully qualified batchy job name of the format wf.job, if no job is specified it will assume global
 
+You also have the option to choose which config provider to use.
+
+*  -conf, config, default core
+
+Datacoco Core - This is default config provider which is looking for a file called etl.cfg in your project root.
+
+etl.cfg folder structure
+
+```
+[sample]
+db_name=local
+user=user
+server=server
+password=XXXX
+port=1433
+type=mssql
+```
+
+Secret Manager - Using this option assumes that you already have secret manager setup in your aws account and as aws key and secret is configured in your environment for you to connect to aws.
+
+Here's example how to use secret manager config option
+*  -conf secret_manager --secret_project_name <your_project> --secret_team <your_team>
+
+
 Here is a sample SQL Script.  If run in SQL workbench you will be prompted for values for var1 and var2.
 
 ::
