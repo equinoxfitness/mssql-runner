@@ -9,7 +9,7 @@ class TestMSSQLRunner(unittest.TestCase):
     def setUp(self):
         os.environ[UNIT_TEST_KEY] = 'True'
         self.testCls = MSSQLRunner(
-            db_name='', host='', user='', password='', port=''
+            db_name='', host='', user='', password='', port='', batchy_server='', batchy_port=''
         )
 
     def test_run_script(self):
@@ -23,7 +23,7 @@ class TestMSSQLRunner(unittest.TestCase):
         self.testCls.run_script(script='',
                                 params='title-test',
                                 sql_command='''
-                                    select * from test_db 
+                                    select * from test_db
                                     where title=$[?title]
                                 ''')
 
@@ -32,9 +32,9 @@ class TestMSSQLRunner(unittest.TestCase):
         self.testCls.run_script(script='',
                                 params='title-test,firstname-john,lastname-doe',
                                 sql_command='''
-                                    select * from test_db 
-                                    where title=$[?title] 
-                                    and firstname=$[?firstname] 
+                                    select * from test_db
+                                    where title=$[?title]
+                                    and firstname=$[?firstname]
                                     and lastname=$[?lastname]
                                 ''')
 
@@ -44,7 +44,7 @@ class TestMSSQLRunner(unittest.TestCase):
                                 params=None,
                                 from_date='2020-03-10T0:00:00.00',
                                 sql_command='''
-                                    select * from test_db 
+                                    select * from test_db
                                     where from_date=$[?from_date]
                                 ''')
 
@@ -56,6 +56,6 @@ class TestMSSQLRunner(unittest.TestCase):
                                 to_date='2020-03-12',
                                 batch_id='1',
                                 sql_command='''
-                                    select * from test_db 
+                                    select * from test_db
                                     where from_date=$[?from_date]
                                 ''')
