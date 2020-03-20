@@ -19,10 +19,13 @@ class MSSQLRunner:
     in postgres or redshift
     """
 
-    def __init__(self, db_name, host, user, password, port):
+    def __init__(self, db_name, host, user, password, port, batchy_server, batchy_port):
         self.ms = None
 
         self.is_test = os.environ.get(UNIT_TEST_KEY, False)
+
+        self.batchy_server = batchy_server
+        self.batchy_port = batchy_port
 
         if not self.is_test:
             self.ms = MSSQLInteraction(
@@ -101,8 +104,8 @@ class MSSQLRunner:
                 job = "global"
             batchy_params = Batch(
                 wf,
-                server=self.conf["batchy"]["server"],
-                port=self.conf["batchy"]["port"],
+                server=self.batchy_server,
+                port=self.batchy_port,
             ).get_status()
             paramset.update(batchy_params[job])
 
@@ -213,14 +216,16 @@ def main(args):
 
     args = parser.parse_args(args)
 
-    (db_name, host, user, password, port) = ConfigWrapper.process_config(args)
+    (db_name, host, user, password, port, batchy_server, batchy_port) = ConfigWrapper.process_config(args)
 
     MSSQLRunner(
         db_name=db_name,
         host=host,
         user=user,
         password=password,
-        port=port
+        port=port,
+        batchy_server=batchy_server,
+        batchy_port=batchy_port
     ).run_script(
         args.script,
         args.from_date,

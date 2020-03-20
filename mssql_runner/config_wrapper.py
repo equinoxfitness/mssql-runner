@@ -58,6 +58,8 @@ class ConfigWrapper:
         host = conf[args.database]["server"]
         user = conf[args.database]["user"]
         password = conf[args.database]["password"]
-        port = conf[args.database].get("port", 1433)
+        port = conf[args.database]["port"]
+        batchy_server = conf["batchy"]["server"]
+        batchy_port = conf["batchy"]["port"]
 
-        return db_name, host, user, password, port
+        return db_name, host, user, password, port, batchy_server, batchy_port
