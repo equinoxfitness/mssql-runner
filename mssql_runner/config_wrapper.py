@@ -55,7 +55,7 @@ class ConfigWrapper:
             conf = config()
 
         db_name = conf[args.database]["db_name"]
-        host = conf[args.database]["server"]
+        host = conf[args.database]["host"]
         user = conf[args.database]["user"]
         password = conf[args.database]["password"]
         port = conf[args.database]["port"]
