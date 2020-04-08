@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [0.1.6] - 2020-04-07
+### Changed
+    - Change database config key from server to host
+
 ## [0.1.5] - 2020-03-20
 ### Changed
     - Fix issue when getting Batch config
@@ -41,6 +45,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
     - MSSql runner classes
     - Batch control
 
+[0.1.6]: https://github.com/equinoxfitness/mssql-runner/compare/v0.1.5...v0.1.6
 [0.1.5]: https://github.com/equinoxfitness/mssql-runner/compare/v0.1.4...v0.1.5
 [0.1.4]: https://github.com/equinoxfitness/mssql-runner/compare/v0.1.3...v0.1.4
 [0.1.3]: https://github.com/equinoxfitness/mssql-runner/compare/v0.1.2...v0.1.3
